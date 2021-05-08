@@ -600,6 +600,7 @@ func isLeafNode(node *TreeNode) bool {
 	return node.Left == nil && node.Right == nil
 }
 
+// todo 501. 二叉搜索树中的众数
 func findMode(root *TreeNode) (answer []int) {
 	var base, count, maxCount int
 	update := func(x int) {
@@ -677,7 +678,6 @@ func findMode__(root *TreeNode) []int {
 	}
 	return ans
 }
-
 func traveans(res map[int]int, root *TreeNode) map[int]int {
 	if root == nil {
 		return res
@@ -687,7 +687,6 @@ func traveans(res map[int]int, root *TreeNode) map[int]int {
 	res = traveans(res, root.Right)
 	return res
 }
-
 func Findmax(res map[int]int) int {
 	max := 0
 	for _, v := range res {
