@@ -1,4 +1,4 @@
-package tree
+package main
 
 import (
 	"fmt"
@@ -427,7 +427,7 @@ func minDepth_(root *TreeNode) int {
 	return 0
 }
 
-// todo 112. 路径总和
+// todo 112. 路径总和 ———— 递归
 func hasPathSum(root *TreeNode, targetSum int) bool {
 	if root == nil {
 		return false
@@ -437,33 +437,35 @@ func hasPathSum(root *TreeNode, targetSum int) bool {
 	}
 	return hasPathSum(root.Left, targetSum-root.Val) || hasPathSum(root.Right, targetSum-root.Val)
 }
+
+// todo 112. 路径总和 ———— 迭代
 func hasPathSum_(root *TreeNode, targetSum int) bool {
 	if root == nil {
 		return false
 	}
-	queNode := []*TreeNode{}
-	queVal := []int{}
-	queNode = append(queNode, root)
-	queVal = append(queVal, root.Val)
-	for len(queNode) != 0 {
-		now := queNode[0]
-		queNode = queNode[1:]
-		valTmp := queVal[0]
-		queVal = queVal[1:]
-		// 到叶子
-		if now.Left == nil && now.Right == nil {
-			if valTmp == targetSum {
+	var qVal []int
+	var qNode []*TreeNode
+	qVal = append(qVal, root.Val)
+	qNode = append(qNode, root)
+	for len(qNode) > 0 {
+		node := qNode[0]
+		val := qVal[0]
+		qVal = qVal[1:]
+		qNode = qNode[1:]
+
+		if node.Left == nil && node.Right == nil {
+			if targetSum == val {
 				return true
 			}
-			continue
 		}
-		if now.Left != nil {
-			queNode = append(queNode, now.Left)
-			queVal = append(queVal, now.Left.Val+valTmp)
+
+		if node.Left != nil {
+			qNode = append(qNode, node.Left)
+			qVal = append(qVal, node.Left.Val+val)
 		}
-		if now.Right != nil {
-			queNode = append(queNode, now.Right)
-			queVal = append(queVal, now.Right.Val+valTmp)
+		if node.Right != nil {
+			qNode = append(qNode, node.Right)
+			qVal = append(qVal, node.Right.Val+val)
 		}
 	}
 	return false
@@ -478,6 +480,86 @@ func invertTree(root *TreeNode) *TreeNode {
 	invertTree(root.Left)
 	invertTree(root.Right)
 	return root
+}
+
+// todo 101. 对称二叉树
+func isSymmetric(root *TreeNode) bool {
+	var q1, q2 []*TreeNode
+	q1 = append(q1, root.Left)
+	q2 = append(q2, root.Right)
+	for len(q1) != 0 || len(q2) != 0 {
+		v1 := q1[0]
+		q1 = q1[1:]
+		v2 := q2[0]
+		q2 = q2[1:]
+
+		if v1 == nil && v2 == nil {
+			continue
+		}
+		if v1 == nil || v2 == nil {
+			return false
+		}
+		if v1.Val != v2.Val {
+			return false
+		}
+
+		q1 = append(q1, v1.Left, v1.Right)
+		q2 = append(q2, v2.Right, v2.Left)
+	}
+	return true
+}
+
+// todo 101. 对称二叉树 ———— 迭代
+func isSymmetric_(root *TreeNode) bool {
+	v1, v2 := root, root
+	var q []*TreeNode
+	q = append(q, v1, v2)
+	for len(q) > 0 {
+		v1, v2 := q[0], q[1]
+		q = q[2:]
+
+		if v1 == nil && v2 == nil {
+			continue
+		}
+
+		if v1 == nil || v2 == nil {
+			return false
+		}
+
+		if v1.Val != v2.Val {
+			return false
+		}
+
+		q = append(q, v1.Left, v2.Right, v1.Right, v2.Left)
+	}
+	return true
+}
+
+// todo 101. 对称二叉树 ———— 递归
+func isSymmetric___(root *TreeNode) bool {
+	mirrorTree(root.Left)
+	return IsEqual(root.Left, root.Right)
+}
+func mirrorTree(root *TreeNode) {
+	if root == nil {
+		return
+	}
+	root.Left, root.Right = root.Right, root.Left
+	mirrorTree(root.Left)
+	mirrorTree(root.Right)
+}
+func IsEqual(src *TreeNode, dst *TreeNode) bool {
+	if src == nil && dst == nil {
+		return true
+	}
+	if src == nil || dst == nil {
+		return false
+	}
+
+	if src.Val != dst.Val {
+		return false
+	}
+	return IsEqual(src.Left, dst.Left) && IsEqual(src.Right, dst.Right)
 }
 
 // todo 257. 二叉树的所有路径
@@ -695,4 +777,82 @@ func Findmax(res map[int]int) int {
 		}
 	}
 	return max
+}
+
+// todo 106. 从中序与后序遍历序列构造二叉树
+func buildTree(inorder []int, postorder []int) *TreeNode {
+	if len(inorder) == 0 || len(postorder) == 0 {
+		return nil
+	}
+	val := postorder[len(postorder)-1]
+
+	var index = 0
+	for k, v := range inorder {
+		if v == val {
+			index = k
+			break
+		}
+	}
+
+	root := &TreeNode{
+		Val: val,
+	}
+	if index != 0 {
+		root.Left = buildTree(inorder[:index], postorder[:index])
+	}
+
+	if index+1 != len(inorder) {
+		root.Right = buildTree(inorder[index+1:], postorder[index:len(postorder)-1])
+	}
+
+	return root
+}
+
+// todo 106. 从中序与后序遍历序列构造二叉树 ———— 最优解
+func buildTree_(inorder []int, postorder []int) *TreeNode {
+	valMap := make(map[int]int)
+	for i, v := range inorder {
+		valMap[v] = i
+	}
+
+	var build func(left, right, postIndex int) *TreeNode
+	build = func(left, right, postIndex int) *TreeNode {
+		if left > right {
+			return nil
+		}
+		val := postorder[postIndex]
+		root := &TreeNode{
+			Val: val,
+		}
+
+		inorderIndex := valMap[val]
+		rightTreeLen := right - inorderIndex
+		root.Left = build(left, inorderIndex-1, postIndex-rightTreeLen-1)
+		root.Right = build(inorderIndex+1, right, postIndex-1)
+		return root
+	}
+	return build(0, len(inorder)-1, len(postorder)-1)
+}
+
+// todo 105. 从前序与中序遍历序列构造二叉树
+func buildTree___(preorder []int, inorder []int) *TreeNode {
+	vMap := make(map[int]int)
+	for i, v := range inorder {
+		vMap[v] = i
+	}
+	var f func(left, right, preIndex int) *TreeNode
+	f = func(left, right, preIndex int) *TreeNode {
+		if left >= right {
+			return nil
+		}
+		v := preorder[preIndex]
+		root := &TreeNode{Val: v}
+		inorderIndex := vMap[v]
+		leftTreeLen := inorderIndex - left
+
+		root.Left = f(left, inorderIndex, preIndex+1)
+		root.Right = f(inorderIndex+1, right, preIndex+leftTreeLen+1)
+		return root
+	}
+	return f(0, len(inorder), 0)
 }

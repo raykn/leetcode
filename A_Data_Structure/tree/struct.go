@@ -1,4 +1,4 @@
-package tree
+package main
 
 type TreeNode struct {
 	Val   int
@@ -8,4 +8,11 @@ type TreeNode struct {
 
 type data struct {
 	sum, count int
+}
+
+type Node struct {
+	Val   int
+	Left  *Node
+	Right *Node
+	Next  *Node
 }
