@@ -818,7 +818,7 @@ func lengthOfLIS__(nums []int) int {
 	return len(dp)
 }
 
-// TODO　42. 接雨水　————　动态规划
+// TODO 42. 接雨水　————　动态规划
 func trap(height []int) int {
 	n := len(height)
 	leftDP := make([]int, n)
@@ -841,7 +841,7 @@ func trap(height []int) int {
 	return res
 }
 
-// TODO　42. 接雨水　————　单调栈
+// TODO 42. 接雨水　————　单调栈
 func trap_(height []int) int {
 	var stack []int
 	var ans int
