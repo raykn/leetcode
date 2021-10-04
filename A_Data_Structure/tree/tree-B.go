@@ -283,3 +283,36 @@ func connect__(root *Node) *Node {
 	}
 	return root
 }
+
+// todo 450. 删除二叉搜索树中的节点
+func deleteNode(root *TreeNode, key int) *TreeNode {
+	if root == nil {
+		return root
+	}
+	if root.Val == key {
+		// 第一种情况：左右都空
+		// 跌二种情况：左空 右不空
+		switch {
+		case root.Left == nil:
+			return root.Right
+		case root.Right == nil:
+			return root.Left
+		default:
+			cur := root.Right
+			for cur.Left != nil {
+				cur = cur.Left
+			}
+			cur.Left = root.Left
+			root = root.Right
+			root = nil
+			return root
+		}
+	}
+	if root.Val > key {
+		root.Left = deleteNode(root.Left, key)
+	}
+	if root.Val < key {
+		root.Right = deleteNode(root.Right, key)
+	}
+	return root
+}
