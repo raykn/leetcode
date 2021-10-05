@@ -7,7 +7,7 @@ import (
 
 func main() {
 	var res = []int{0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1}
-	fmt.Println(trap_(res))
+	fmt.Println(trap(res))
 }
 
 // TODO 25. K 个一组翻转链表 ———— 困难 自己
@@ -834,6 +834,9 @@ func trap(height []int) int {
 	for i := n - 2; i >= 0; i-- {
 		rightDP[i] = max(rightDP[i+1], height[i])
 	}
+
+	fmt.Println(leftDP)
+	fmt.Println(rightDP)
 
 	for i, h := range height {
 		res += min(leftDP[i], rightDP[i]) - h
