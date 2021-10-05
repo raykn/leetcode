@@ -835,9 +835,6 @@ func trap(height []int) int {
 		rightDP[i] = max(rightDP[i+1], height[i])
 	}
 
-	fmt.Println(leftDP)
-	fmt.Println(rightDP)
-
 	for i, h := range height {
 		res += min(leftDP[i], rightDP[i]) - h
 	}
